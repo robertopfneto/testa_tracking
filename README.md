@@ -1,3 +1,7 @@
+====================================================================================================
+
+### PT-BR
+
 # Annotation Tool
 
 Ferramenta interativa para validar detecoes das classes listadas em `TARGET_CLASSES` usando um modelo YOLO treinado (`../best.pt`) e registrar resultados em um dataset COCO localizado em `output_dataset/` (imagens aprovadas + `annotations.coco.json`).

@@ -141,10 +141,10 @@ class AnnotationTool:
         navigation_frame = tk.Frame(controls_frame)
         navigation_frame.pack(side=tk.TOP, pady=(5, 0))
 
-        self.prev_button = tk.Button(navigation_frame, text="← Anterior", command=self.on_prev_image, width=12)
+        self.prev_button = tk.Button(navigation_frame, text="< Anterior", command=self.on_prev_image, width=12)
         self.prev_button.pack(side=tk.LEFT, padx=5)
 
-        self.next_button = tk.Button(navigation_frame, text="Próximo →", command=self.on_next_image, width=12)
+        self.next_button = tk.Button(navigation_frame, text="Proximo >", command=self.on_next_image, width=12)
         self.next_button.pack(side=tk.LEFT, padx=5)
 
         self.window.bind("<Return>", lambda event: self.on_accept())

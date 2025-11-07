@@ -88,3 +88,114 @@ Os campos `image_id` e `annotation_id` sao gerados sequencialmente e começam em
 Desenvolvido por Roberto Neto - 06/11/2025
 
 O modelo "model.pt" foi retirado do hugging face: https://huggingface.co/mozilla-ai/swimming-pool-detector/tree/main
+
+===================================================================================================================================
+
+# ENG
+
+# Annotation Tool
+
+Interactive tool for validating detections of the classes listed in `TARGET_CLASSES` using a trained YOLO model (`../best.pt`) and recording results into a COCO dataset located in `output_dataset/` (approved images + `annotations.coco.json`).
+
+## Requirements
+- Python 3.9+
+- Dependencies installed in the active environment:
+  - `ultralytics`
+  - `opencv-python`
+  - `numpy`
+  - `pillow`
+  - `tqdm` (optional but recommended if using the frame extraction pipeline)
+
+> **Note:** `tkinter` comes pre-installed with official Python distributions on Windows and macOS.  
+> On Linux, you may need to install it manually via your package manager (`sudo apt install python3-tk`).
+
+## Expected Structure
+
+```
+tracker/
+├── best.pt
+├── videos/
+│   └── ... video.mp4
+└── testa_tracking/
+    ├── main.py
+    ├── README.md
+    └── output_dataset/
+        ├── images/
+        │   └── ... validated_frames.jpg
+        └── annotations.coco.json
+```
+
+The structure doesn’t need to match exactly.  
+Instead of `video.mp4`, you can use a `dataset` folder containing images:
+
+```
+tracker/
+├── best.pt
+├── dataset/
+│   └── ... images[i].jpg
+└── testa_tracking/
+    ├── main.py
+    ├── README.md
+    └── output_dataset/
+        ├── images/
+        │   └── ... images[i].jpg
+        └── annotations.coco.json
+```
+
+## Class Configuration
+- Open `main.py` and adjust the `TARGET_CLASSES` list with the exact labels from your `model.pt`.  
+  You can validate as many classes as needed; each item automatically generates a corresponding `categories` entry.
+- The `DEFAULT_MANUAL_CLASS` constant defines the class used for manually drawn boxes.  
+  By default, it takes the first item from `TARGET_CLASSES`, but you can change it freely.
+- The `CONF_THRESHOLD` value (default: 0.60) controls which detections are displayed/saved.
+
+## How to Use
+1. Set `SOURCE_PATH` in `main.py`:
+   - If it points to a video file (`.mp4`, `.avi`, etc.), the app processes it frame by frame.
+   - If it points to a directory containing supported image files (`.jpg/.png/...`), it processes each file individually.
+   - Both modes work; just provide the desired (absolute or relative) path.
+2. Ensure that `model.pt` is located in the parent directory (`../model.pt` from `testa_tracking`).
+3. Activate your virtual environment and run:
+   ```bash
+   python main.py
+   ```
+4. For each processed frame/image with detections (confidence ≥ `CONF_THRESHOLD` for any class in `TARGET_CLASSES`),  
+   a window will show the bounding boxes and confidence values.  
+   Validated results are saved in `output_dataset/images/`.
+
+## Controls
+| Action | Key/Button | Description |
+|--------|-------------|-------------|
+| **Validate** | Enter | Saves detections and updates JSON |
+| **Reject** | Space | Skips the current frame |
+| **Exit** | Esc | Stops and saves progress |
+| **Annotation Mode** | K | Toggle manual box drawing mode |
+| **Remove Annotation** | Button | Click on a box to delete it |
+
+When **Annotation Mode** is active, click and drag inside the window to draw new bounding boxes.  
+They are added to the JSON upon validation.
+
+When **Remove Annotation** mode is active, click on any bounding box (manual or model-generated) to remove it from the current frame; it will not appear in the JSON.
+
+## COCO Output
+The `annotations.coco.json` file (in `output_dataset/`) is continuously updated with:
+- **`categories`**: list of all configured classes from `TARGET_CLASSES`, each with a sequential `id`.
+- **`images`**: one entry per validated frame (`file_name`, `width`, `height`, `id`).
+- **`annotations`**: each approved detection with a `bbox` in `[x, y, width, height]` format, `score`, `image_id`, and `category_id`.
+
+The `image_id` and `annotation_id` fields are sequential and start at 1.  
+Each approved frame generates a `VIDEO_FRAME_xxxxx.jpg` file in `output_dataset/images/`, aligned with its corresponding JSON entry.
+
+## Tips
+- Adjust `CONF_THRESHOLD`, `TARGET_CLASSES`, and `DEFAULT_MANUAL_CLASS` at the top of `main.py` to match your model configuration.
+- For long videos, you can safely stop the process with **Esc**; progress will be saved.
+- Use manual annotation mode (**K**) to add missing detections not found by the model.
+- If you need to remove a wrong box before validation, enable **Remove Annotation** and click on it directly.
+
+---
+
+**Developed by Roberto Neto – 11/06/2025**
+
+The YOLO model (`model.pt`) was obtained from Hugging Face:  
+👉 [https://huggingface.co/mozilla-ai/swimming-pool-detector/tree/main](https://huggingface.co/mozilla-ai/swimming-pool-detector/tree/main)
+
